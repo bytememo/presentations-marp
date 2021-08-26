@@ -6,8 +6,9 @@ on:
       - master
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    if: ${{ contains(github.event.head_commit.message, 'deploy') }}
     steps:
       - uses: actions/checkout@v2
 
@@ -27,6 +28,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      - name: Set env
+        run: |
+          echo "slide-name=$(echo '${{ github.event.head_commit.message }}' | cut -d' ' -f 2)" >> $GITHUB_ENV
+
       - name: Install dependencies and Puppeteer
         run: |
           npm ci
@@ -35,7 +40,7 @@ jobs:
 
       - name: Build Marp slide deck
         run: |
-          CHROME_PATH=$(node .puppeteer.js) npm run build
+          CHROME_PATH=$(node .puppeteer.js) npm run build -- ./slides/${{ env.slide-name }}.md --base /presentations-marp/${{ env.slide-name }}/
           touch ./dist/.nojekyll
         env:
           # Please update URL if you want to use custom domain
