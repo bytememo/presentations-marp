@@ -56,4 +56,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: dist
-          target-folder: ${{ env.slide-name }}
+          TARGET_FOLDER: ${{ env.slide-name }}
